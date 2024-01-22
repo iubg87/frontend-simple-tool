@@ -3,10 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <title>Click to copy it!</title>
+    <style>
+      body {
+        margin: 10;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+      }
+      textarea {
+        height: auto;
+        width: 50%;
+      }
+    </style>
   </head>
   <body>
-    <h2>Native Javasciprt Click-To-Copy</h2>
+    <h2>Native Javascript Click-To-Copy</h2>
     <h3>Please allow javascript and clipboard permission from your browser setting!</h3>
+    <hr>
+    <div id="box"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bowser/2.11.0/bundled.min.js"></script>
     <script>
       // https://stackoverflow.com/a/33928558
       function getParameterByName(name, url) {
@@ -18,19 +33,47 @@
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, ' '));
       }
-  
-      navigator.clipboard.writeText(getParameterByName('data'))
+      
+      const clipboardcopy = () => {
+        navigator.clipboard.writeText(getParameterByName('data'))
         .then(
           setTimeout(() => { window.close(); }, 100))
         .catch(function (error) { alert(error); })
             const blobtext = new Blob([getParameterByName('data')], { type: 'text/plain' })
 
-        // ClipboardItem if need binary copy
-      // const clipboardItem = new ClipboardItem({ 'text/plain': blobtext });
-      // navigator.clipboard.write([clipboardItem])
-      //   .then(
-      //     setTimeout(() => { window.close(); }, 100))
-      //   .catch(function (error) { alert(error); })
+          // ClipboardItem if need binary copy
+        // const clipboardItem = new ClipboardItem({ 'text/plain': blobtext });
+        // navigator.clipboard.write([clipboardItem])
+        //   .then(
+        //     setTimeout(() => { window.close(); }, 100))
+        //   .catch(function (error) { alert(error); })
+      }
+      
+      const browserName = bowser.getParser(window.navigator.userAgent).getBrowserName();
+      const unsupportedBrowsers = ["Firefox", "Safari"];
+      
+      if (unsupportedBrowsers.includes(browserName)) {
+        const box = document.getElementById("box");
+        
+        const h3 = document.createElement('h3');
+        h3.textContent = `Your current browser is ${browserName}, which does not support automatic copy.`
+        box.appendChild(h3);
+
+        const h4 = document.createElement('h4');
+        h4.textContent = `Please click anywhere in this page to manual copy!`;
+        box.appendChild(h4);
+
+        const textbox = document.createElement("textarea");
+        textbox.readOnly = true;
+        textbox.value = getParameterByName('data');
+
+        box.appendChild(textbox);
+        
+        document.body.addEventListener('click', clipboardcopy);
+        document.body.addEventListener('touchstart', clipboardcopy);
+      } else {
+        clipboardcopy()
+      }
     </script>
   </body>
 </html>
@@ -45,4 +88,6 @@
       https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API#browser_compatibility
     - Ways to use clipboard:
       https://www.shirohana.me/blog/articles/2020-w3c-clipboard-api/
+    - Bowser-js to check client side browser:
+      https://github.com/bowser-js/bowser/
 -->

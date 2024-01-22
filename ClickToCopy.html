@@ -1,34 +1,48 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Click to copy it!</title>
-</head>
-<body>
-  <h2>Native Javasciprt Click-To-Copy</h2>
-  <h3>Please allow javascript and clipboard permission from your bowser setting!</h3>
-  <script>
-    // https://stackoverflow.com/a/33928558
-    function getParameterByName(name, url) {
-      if (!url) url = window.location.href;
-      name = name.replace(/[\[\]]/g, '\\$&');
-      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
-    var dataValue = getParameterByName('data');
-    navigator.clipboard
-      .writeText(dataValue)
-      .then(() => {
-        // I don't know but need setTimeout or browser will shutdown tab before copy!
-        setTimeout(() => {
-          window.close();
-        }, 20);
-      })
-      .catch(() => {
-      });
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Click to copy it!</title>
+  </head>
+  <body>
+    <h2>Native Javasciprt Click-To-Copy</h2>
+    <h3>Please allow javascript and clipboard permission from your browser setting!</h3>
+    <script>
+      // https://stackoverflow.com/a/33928558
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+  
+      navigator.clipboard.writeText(getParameterByName('data'))
+        .then(
+          setTimeout(() => { window.close(); }, 100))
+        .catch(function (error) { alert(error); })
+            const blobtext = new Blob([getParameterByName('data')], { type: 'text/plain' })
+
+        // ClipboardItem if need binary copy
+      // const clipboardItem = new ClipboardItem({ 'text/plain': blobtext });
+      // navigator.clipboard.write([clipboardItem])
+      //   .then(
+      //     setTimeout(() => { window.close(); }, 100))
+      //   .catch(function (error) { alert(error); })
+    </script>
+  </body>
 </html>
+
+<!--
+  Reference:
+    - Async Clipboard API:
+      https://webkit.org/blog/10855/async-clipboard-api/
+    - Clipboard API reference doc:
+      https://www.w3.org/TR/clipboard-apis/#async-clipboard-api
+    - Clipboard API for each browser:
+      https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API#browser_compatibility
+    - Ways to use clipboard:
+      https://www.shirohana.me/blog/articles/2020-w3c-clipboard-api/
+-->

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .noscript-message {
+            display: none;
+            color: red;
+        }
+        .noscript-message.active {
+            display: block;
+        }
+        .message {
+            margin: 20px;
+        }
+        .message p {
+            margin: 0;
+        }
+        .message p.redirection-info {
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+        <div class="noscript-message active">
+            JavaScript is required to redirect properly. Please enable JavaScript in your browser settings.
+            <br>
+            If you are unsure how to enable JavaScript, please copy and paste the URL after `?ref=` in the original link to view the actual link.
+            <br><br>
+            您的瀏覽器不支援 JavaScript，如果您不知道怎麼開啟，請直接複製原始連結後方的網址查看真實連結。
+        </div>
+    </noscript>
+    
+    <div class="message">
+        <p id="redirect-message">Processing your request...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to get query parameter value
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // Function to check user agent
+            function isBlockedUserAgent() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                return userAgent.includes('facebook') || userAgent.includes('fb');
+            }
+
+            // Get ref parameter
+            const refUrl = getQueryParam('ref');
+            const redirectTo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
+            // Function to perform redirection
+            function performRedirection(url, delay = 0) {
+                if (delay > 0) {
+                    document.getElementById('redirect-message').innerHTML = `Please click the upper right corner -> Open in external browser within ${delay / 1000} seconds\nOtherwise, you will be redirected to a fixed link to prevent detection.\n\n請於 ${delay / 1000} 秒內點擊右上角 -> 以外部瀏覽器開啟連結\n否則將轉導至防止偵測用固定連結。`;
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, delay);
+                } else {
+                    window.location.href = url;
+                }
+            }
+
+            if (isBlockedUserAgent()) {
+                // Redirect to YouTube video after 10 seconds
+                performRedirection(redirectTo, 10000);
+            } else if (refUrl) {
+                // Redirect to the ref URL immediately
+                performRedirection(refUrl);
+            } else {
+                // If no ref URL is provided, show an error message
+                document.body.innerHTML = `
+                    <h1>Error: No redirect URL specified.</h1>
+                    <p>Your input is incorrect. No ?ref=<url> parameter detected.</p>
+                    <p>您的輸入錯誤，沒有檢測到 ?ref=<url> 參數。</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
